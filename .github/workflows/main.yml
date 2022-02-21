@@ -34,7 +34,7 @@ jobs:
         run: |
           ./generate-atimes
           docker build . -t bczhc/gen-img
-          docker run bczhc/gen-img --name gen-img-run
+          docker run --name gen-img-run bczhc/gen-img
           docker cp gen-img-run:/commits-scatter.svg .
           docker cp gen-img-run:/commits-barchart.svg .
           
