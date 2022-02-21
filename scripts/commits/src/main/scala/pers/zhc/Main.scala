@@ -3,7 +3,7 @@ package pers.zhc
 import com.google.gson.{Gson, JsonArray}
 import pers.zhc.util.IOUtils
 
-import java.io.ByteArrayOutputStream
+import java.io.{ByteArrayOutputStream, File, FileOutputStream}
 import java.net.{HttpURLConnection, URL, URLConnection}
 import java.util.regex.Pattern
 import java.util.{Calendar, Date, TimeZone}
@@ -25,11 +25,22 @@ object Main {
     }
     PAT = pat.get
 
-    val repos = requestRepos()
-    println(repos.toList)
+    val repoExcludeList = Option(System.getenv("REPO_EXCLUDE"))
+      .getOrElse("")
+      .split(",")
+      .map(_.trim)
+      .toList
 
-    val repo = repos.find(_.name == "some-tools").get
-    println(requestCommits(repo, USER).toList)
+    val repos = requestRepos()
+      .filterNot({ it => repoExcludeList.contains(it.name) })
+      .toList
+
+    val allCommits = repos.flatMap { repo =>
+      println(repo.name)
+      requestCommits(repo, USER).filter(_.author == USER).toList
+    }
+    writeCommitsATime(allCommits)
+    println("Done")
   }
 
   def requestRepos(): Repos = {
@@ -195,5 +206,18 @@ object Main {
   def requestCommits(repo: Repository, user: String): Commits = {
     val commits = new CommitRequest(repo, user)
     commits.map({ it => commits.parse(it) }).toArray.flatten
+  }
+
+  def writeCommitsATime(commits: Iterable[Commit]): Unit = {
+    val file = new File("./atimes")
+    val os = new FileOutputStream(file)
+
+    commits.foreach { commit =>
+      os.write(commit.authorTime.toString.getBytes)
+      os.write('\n')
+    }
+
+    os.flush()
+    os.close()
   }
 }
