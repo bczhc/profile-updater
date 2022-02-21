@@ -1,0 +1,53 @@
+name: Generate images
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Configure SSH
+        env:
+          SSH_PRK: ${{ secrets.SSH_PRK }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -d ~/.ssh ]; then
+              mkdir ~/.ssh
+          fi
+          ssh-keyscan gitlab.com 2> /dev/null >> ~/.ssh/known_hosts
+          echo $SSH_PRK | base64 -d > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+      - name: Run
+        run: |
+          ./generate-atimes
+          docker build . -t bczhc/gen-img
+          docker run bczhc/gen-img --name gen-img-run
+          docker cp gen-img-run:/commits-scatter.svg .
+          docker cp gen-img-run:/commits-barchart.svg .
+          
+          REPO_URL='git@github.com:bczhc/bczhc.git'
+          git clone "$REPO_URL"
+          cd bczhc
+          rm -rf .git
+          git init
+          git remote add origin "$REPO_URL"
+          
+          git config --global user.email "bczhc0@126.com"
+          git config --global user.name "bczhc"
+          
+          cp ../commits-scatter.svg ../commits-barchart.svg .
+          git add --all
+          git commit -m update
+          git push origin master -f

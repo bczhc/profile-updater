@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+./generate-commits-scatter.wls atimes commits-scatter.svg
+./generate-commits-per-day-hour-barchart.wls atimes commits-barchart.svg
