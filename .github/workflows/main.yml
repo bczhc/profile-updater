@@ -1,10 +1,10 @@
 name: Generate images
 
 on:
-  push:
-    branches: [ '**' ]
-  pull_request:
-    branches: [ '**' ]
+  schedule:
+    - cron: '0 0 * * *'
+  watch:
+    types: [started]
 
 jobs:
   build:
