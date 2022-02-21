@@ -6,9 +6,21 @@ argv=Rest@$ScriptCommandLine;
 argc=Length@argv;
 If[argc!=2,(Print["Usage: command <commit-author-time-list-file> <output-file>"];Exit[]),0]
 
-aTimestamps=Import[argv[[1]],"Text"];
 intItpr=Interpreter["Integer"];
-aTimes=(FromUnixTime[intItpr[#]])&/@StringSplit[aTimestamps,"\n"];
+
+timezoneOffset[time_]:=(
+timezoneStr=StringSplit[time," "][[3]];
+sign=If[StringPart[timezoneStr,1]=="+",1,-1];
+(intItpr@StringTake[timezoneStr,{2,3}]
++intItpr@StringTake[timezoneStr,{4,5}]/60)*sign//N
+);
+parseDate[dateStr_]:=DateObject[
+(split=StringSplit[dateStr];split[[1]]<>" "<>split[[2]]),
+TimeZone->timezoneOffset[dateStr]
+];
+
+aTimesRead=Import[argv[[1]],"Text"];
+aTimes=(parseDate[#])&/@StringSplit[aTimesRead,"\n"];
 tObjs=(TimeObject[DateValue[#,{"Hour","Minute","Second"}]])&/@aTimes;
 ts=TimeSeries[( 
 dv=DateValue[#,{"Hour","Minute","Second"}];

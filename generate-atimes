@@ -2,12 +2,22 @@
 
 set -e
 
-cd commits
+cd github-api
 ./gradlew fatJar
 
 export REPO_EXCLUDE=single-json-header,rust-lib-doc,store,scala-book,rime-wubi86-jidian,glm-headers,test,stb-image-single-header,sqlite3-lib,ndk-libmagic,zhc-C99,mathematica,store,bczhc,bczhc.github.io,world
 
-java -jar build/libs/commits-all.jar
+java -jar build/libs/github-api-all.jar
 
 cd ..
-mv commits/atimes .
+mv github-api/repos .
+
+rm -rf cloned || true
+mkdir cloned
+
+while IFS= read -r repo; do
+  git clone git@github.com:bczhc/"$repo" ./cloned/"$repo"
+  git -C ./cloned/"$repo" log --format='%ai' >> atimes
+done < repos
+
+rm -rf cloned

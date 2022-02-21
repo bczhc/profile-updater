@@ -35,12 +35,20 @@ object Main {
       .filterNot({ it => repoExcludeList.contains(it.name) })
       .toList
 
-    val allCommits = repos.flatMap { repo =>
-      println(repo.name)
-      requestCommits(repo, USER).filter(_.author == USER).toList
+    writeReposToFile(repos)
+  }
+
+  def writeReposToFile(repos: Iterable[Repository]): Unit = {
+    val file = new File("./repos")
+    val os = new FileOutputStream(file)
+
+    repos.foreach { repo =>
+      os.write(repo.name.getBytes)
+      os.write('\n')
     }
-    writeCommitsATime(allCommits)
-    println("Done")
+
+    os.flush()
+    os.close()
   }
 
   def requestRepos(): Repos = {
