@@ -20,7 +20,6 @@ jobs:
       - name: Configure SSH
         env:
           SSH_PRK: ${{ secrets.SSH_PRK }}
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ ! -d ~/.ssh ]; then
               mkdir ~/.ssh
@@ -30,6 +29,8 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
       - name: Run
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./generate-atimes
           docker build . -t bczhc/gen-img
