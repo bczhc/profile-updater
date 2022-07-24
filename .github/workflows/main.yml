@@ -49,8 +49,8 @@ jobs:
           git init
           git remote add origin "$REPO_URL"
           
-          git config --global user.email "bczhc0@126.com"
-          git config --global user.name "bczhc"
+          git config --global user.email '<>'
+          git config --global user.name "github-actions-bot"
           
           cp ../commits-scatter.svg ../commits-barchart.svg .
           git add --all
