@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cred="$(cat ./credentials)"
+username="$(echo "$cred" | cut -d' ' -f1)"
+password="$(echo "$cred" | cut -d' ' -f2)"
+
+wolframengine -username "$username" -password "$password"
