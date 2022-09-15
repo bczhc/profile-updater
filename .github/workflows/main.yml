@@ -35,7 +35,7 @@ jobs:
       - name: Run
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-          WOLFRAM_ENGINE_AUTH: ${{ WOLFRAM_ENGINE_AUTH }}
+          WOLFRAM_ENGINE_AUTH: ${{ secrets.WOLFRAM_ENGINE_AUTH }}
         run: |
           echo "$WOLFRAM_ENGINE_AUTH" > credentials
 
