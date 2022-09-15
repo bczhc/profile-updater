@@ -5,3 +5,4 @@ username="$(echo "$cred" | cut -d' ' -f1)"
 password="$(echo "$cred" | cut -d' ' -f2)"
 
 wolframscript -username "$username" -password "$password"
+wolframscript -activate
