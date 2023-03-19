@@ -1,4 +1,4 @@
-FROM bczhc/wolfram
+FROM bczhc/wolfram:13.2.0
 
 WORKDIR /home/wolframengine
 
