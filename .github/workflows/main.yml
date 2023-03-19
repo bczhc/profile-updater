@@ -35,18 +35,13 @@ jobs:
       - name: Run
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-          WOLFRAM_ENGINE_AUTH: ${{ secrets.WOLFRAM_ENGINE_AUTH }}
         run: |
-          echo "$WOLFRAM_ENGINE_AUTH" > credentials
-
           ./generate-atimes
-          
           docker build . -t bczhc/gen-img
           docker run --name gen-img-run bczhc/gen-img
           docker cp gen-img-run:/home/wolframengine/commits-scatter.svg .
           docker cp gen-img-run:/home/wolframengine/commits-barchart.svg .
-      - name: Update profile
-        run: |
+          
           REPO_URL='git@github.com:bczhc/bczhc.git'
           git clone "$REPO_URL"
           cd bczhc
