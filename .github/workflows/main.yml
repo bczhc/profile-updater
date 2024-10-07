@@ -3,11 +3,7 @@ name: Generate images
 on:
   schedule:
     - cron: '0 0 * * *'
-  watch:
-    types: [ started ]
   push:
-    branches: [ '**' ]
-  pull_request:
     branches: [ '**' ]
 
 jobs:
